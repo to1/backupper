@@ -1,6 +1,6 @@
 {
     "name": "to1/backupper",
-    "description": ":description",
+    "description": "Simple command line based tool to help you back up your project",
     "authors": [
         {
             "name": "Jeton Ahmetaj",
