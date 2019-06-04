@@ -29,18 +29,5 @@ Route::get('test', function () {
 	    }
 	}
 	$zip->close();
-//     	$zip = new ZipArchive;
-    	
-// 			if ($zip->open($base.'\\'.'backup.zip', ZipArchive::CREATE | ZipArchive::OVERWRITE)) {
-// 				  $zip->addFile($base.'\\'.'app.php','test.php');
-// 				  $zip->addFile($base.'\\'.'auth.php','test2.php');
-// 			    echo 'ok';
-// 			} else {
-				
-// 			    echo 'failed';
-// 			}
-// // echo ($base.'\\'.'app.php');
-// 			  echo $base.'\\'.'auth.php';
-// 			    $zip->close();
-   //      echo 'backup';
+
 });

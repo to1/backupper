@@ -7,9 +7,12 @@ use to1\backupper\backupper;
 use ZipArchive;
 use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
+use DB;
+use PDO;
+use Storage;
 class backup extends Command {
 
-    protected $signature = 'to1:backup {path=all} {--exclude=}';
+    protected $signature = 'to1:backup {path=all} {--database}  {--exclude=vendor}';
 
     protected $description = 'Command description';
 
@@ -18,17 +21,26 @@ class backup extends Command {
     }
 
     public function handle() {
-	
+			
 		$path = $this->argument('path');
 		$exclude = $this->option('exclude');
-		$base = base_path();
+		$database = $this->option('database');
+
+  		$base = base_path();
     	if ($path !== "all")
     		$base = base_path($path);
+
+		if ($database){
+    		$success = $this->dumpMySQL();
+    		$this->info("Database was dumped successfully");
+		}
+   
 		// Initialize archive object
 		$zip = new ZipArchive();
-		$zip->open($path.'_backup.zip', ZipArchive::CREATE | ZipArchive::OVERWRITE);
+		$app_name = config('app.name');
+		$zip->open($app_name.date("Y-m-d").'.zip', ZipArchive::CREATE | ZipArchive::OVERWRITE);
 
-		  // Create recursive directory iterator
+		// Create recursive directory iterator
 		/** @var SplFileInfo[] $files */
 		$files = new RecursiveIteratorIterator(
 		    new RecursiveDirectoryIterator($base),
@@ -40,16 +52,15 @@ class backup extends Command {
 			// $folder_name = basename($file)
 			// $answer = $this->ask($folder_name);
 		    // if($folder_name == 'vendor')
-		$directory = basename(dirname($file));
-				    // if($exclude == $directory)
-					
-					// foreach ($exclude as $key => $value) {
-						
-						if (strpos($file, $exclude) !== false) {
-							// $answer = $this->ask($directory);
-							continue;
-						}
-			
+			$directory = basename(dirname($file));
+
+		if (isset($exclude)) {
+				if (strpos($file, $exclude) !== false) {
+					// $answer = $this->ask($directory);
+						continue;
+					}
+		}
+	
 		    // Skip directories (they would be added automatically)
 		    if (!$file->isDir())
 		    {
@@ -61,13 +72,29 @@ class backup extends Command {
 		        $zip->addFile($filePath, $relativePath);
 		    }else{
 
-					// }
 		    }
 		}
 		$zip->close();
-		
-  		// $backup = new backupper();
-  		// $backup->backup($path);
     }
+
+    public function dumpMySQL(){
+    	$mysqlDatabaseName =  env('DB_DATABASE', 'test');
+		$mysqlUserName = env('DB_USERNAME', '');
+		$mysqlPassword = env('DB_PASSWORD', '');
+		$mysqlHostName = env('DB_HOST', '');
+		$dir = base_path();
+		$table_name = "users";
+	    $mysqlExportPath =base_path('storage')."\users.sql";
+		// DB::statement("SELECT * INTO OUTFILE '".addslashes($mysqlExportPath)."' FROM users");
+
+
+		try {
+ 			$backup_file = $mysqlDatabaseName . date("Y-m-d-H-i-s") . '.gz';
+   			$command = "mysqldump --opt -h ".$mysqlHostName." -u ".$mysqlUserName." -p ".$mysqlPassword." ". "".$mysqlDatabaseName." | gzip > $backup_file";
+			passthru( $command );
+		}
+		catch(Exception $Exception){
+		}
+	}
 
 }
