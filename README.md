@@ -3,7 +3,14 @@
 ### Notice the database backup currently only works on mysql databases 
 Backupper is a command line based tool to back up you'r laravel project
 
-Running this command will backup all you project except "vendor" which is a folder excluded by default
+```
+composer require to1/backupper
+```
+will install the package to your project.
+
+After the package was isntalled successfully you can use the these commands.
+
+This command will backup all you project except "vendor" which is a folder excluded by default
 
 ```
   php artisan to1:backup
