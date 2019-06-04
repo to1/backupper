@@ -12,7 +12,7 @@ use PDO;
 use Storage;
 class backup extends Command {
 
-    protected $signature = 'to1:backup {path=all} {--database}  {--exclude=vendor}';
+    protected $signature = 'to1:backup {path=all} {--database=}  {--exclude=vendor}';
 
     protected $description = 'Command description';
 
@@ -30,9 +30,13 @@ class backup extends Command {
     	if ($path !== "all")
     		$base = base_path($path);
 
+		// $this->ask($database);
 		if ($database){
     		$success = $this->dumpMySQL();
     		$this->info("Database was dumped successfully");
+
+    		if( $database == 'only')
+    			return;
 		}
    
 		// Initialize archive object
@@ -83,10 +87,6 @@ class backup extends Command {
 		$mysqlPassword = env('DB_PASSWORD', '');
 		$mysqlHostName = env('DB_HOST', '');
 		$dir = base_path();
-		$table_name = "users";
-	    $mysqlExportPath =base_path('storage')."\users.sql";
-		// DB::statement("SELECT * INTO OUTFILE '".addslashes($mysqlExportPath)."' FROM users");
-
 
 		try {
  			$backup_file = $mysqlDatabaseName . date("Y-m-d-H-i-s") . '.gz';
