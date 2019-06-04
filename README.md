@@ -8,7 +8,7 @@ composer require to1/backupper
 ```
 will install the package to your project.
 
-After the package was isntalled successfully you can use the these commands.
+After the package was installed successfully you can use the these commands.
 
 This command will backup all you project except "vendor" which is a folder excluded by default
 
