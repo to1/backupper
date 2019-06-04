@@ -4,13 +4,13 @@
     "license": "license",
     "authors": [
         {
-            "name": "author name",
-            "email": "author email",
+            "name": "Jeton Ahmetaj",
+            "email": "jeton,ahmetaj40@gmail.com",
             "homepage": "author homepage"
         }
     ],
     "homepage": "https://github.com/to1/backupper",
-    "keywords": ["Laravel", "backupper"],
+    "keywords": ["Laravel", "backupper", "backup"],
     "require": {
         "illuminate/support": "~5"
     },
