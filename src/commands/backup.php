@@ -14,11 +14,12 @@ class backup extends Command {
 
     protected $signature = 'to1:backup {path=all} {--database=}  {--exclude=vendor}';
 
-    protected $description = 'Command description';
+    protected $description = 'Back up you project files';
 
     public function __construct() {
         parent::__construct();
     }
+
 
     public function handle() {
 			
@@ -26,11 +27,12 @@ class backup extends Command {
 		$exclude = $this->option('exclude');
 		$database = $this->option('database');
 
+		//Base path varibale : Change this if you wanna change the path of where to save the zip file
   		$base = base_path();
     	if ($path !== "all")
     		$base = base_path($path);
 
-		// $this->ask($database);
+    	//If the database options are set we want to dump the datbase
 		if ($database){
     		$success = $this->dumpMySQL();
     		$this->info("Database was dumped successfully");
@@ -53,17 +55,13 @@ class backup extends Command {
 
 		foreach ($files as $name => $file)
 		{
-			// $folder_name = basename($file)
-			// $answer = $this->ask($folder_name);
-		    // if($folder_name == 'vendor')
 			$directory = basename(dirname($file));
 
-		if (isset($exclude)) {
+			if (isset($exclude)) {
 				if (strpos($file, $exclude) !== false) {
-					// $answer = $this->ask($directory);
 						continue;
 					}
-		}
+			}
 	
 		    // Skip directories (they would be added automatically)
 		    if (!$file->isDir())
@@ -81,8 +79,11 @@ class backup extends Command {
 		$zip->close();
     }
 
+	/**
+	*	Function to dump the database 
+	**/
     public function dumpMySQL(){
-    	$mysqlDatabaseName =  env('DB_DATABASE', 'test');
+    	$mysqlDatabaseName =  env('DB_DATABASE', '');
 		$mysqlUserName = env('DB_USERNAME', '');
 		$mysqlPassword = env('DB_PASSWORD', '');
 		$mysqlHostName = env('DB_HOST', '');
