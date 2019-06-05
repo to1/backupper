@@ -1,12 +1,12 @@
 {
     "name": "to1/backupper",
-    "description": ":description",
-    "license": "license",
+    "description": "Simple command line based tool to help you back up your project",
     "authors": [
         {
             "name": "Jeton Ahmetaj",
-            "email": "jeton,ahmetaj40@gmail.com",
-            "homepage": "author homepage"
+
+            "email": "jeton.ahmetaj40@gmail.com",
+            "homepage": ""
         }
     ],
     "homepage": "https://github.com/to1/backupper",
