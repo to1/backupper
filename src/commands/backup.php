@@ -12,7 +12,7 @@ use PDO;
 use Storage;
 class backup extends Command {
 
-    protected $signature = 'to1:backup {path=all} {--database=}  {--exclude=vendor}';
+    protected $signature = 'to1:backup {path=all} {--database=}';
 
     protected $description = 'Back up you project files';
 
@@ -22,10 +22,22 @@ class backup extends Command {
 
 
     public function handle() {
+
 			
 		$path = $this->argument('path');
-		$exclude = $this->option('exclude');
 		$database = $this->option('database');
+		$exclude = config('backupper.exclude');
+		$pages = 1;
+		if ($database && $database != 'only'){
+			$pages++;
+			$this->output->write("<info>Archiving files and exporting the database => </info>");
+		}else
+			$this->output->write("<info>Archiving files => </info>");
+
+		$progressBar = $this->output->createProgressBar($pages);
+
+		
+        $progressBar->start();
 
 		//Base path varibale : Change this if you wanna change the path of where to save the zip file
   		$base = base_path();
@@ -34,11 +46,14 @@ class backup extends Command {
 
     	//If the database options are set we want to dump the datbase
 		if ($database){
-    		$success = $this->dumpMySQL();
-    		$this->info("Database was dumped successfully");
-
-    		if( $database == 'only')
+    		$this->dumpMySQL();
+    		if( $database == 'only'){
+    			// $this->output->write("<info>Exporting the database => </info>");
+    			$progressBar->advance();
+    			$progressBar->finish();
     			return;
+    		}
+ 
 		}
    
 		// Initialize archive object
@@ -56,11 +71,16 @@ class backup extends Command {
 		foreach ($files as $name => $file)
 		{
 			$directory = basename(dirname($file));
-
+			
 			if (isset($exclude)) {
-				if (strpos($file, $exclude) !== false) {
-						continue;
+				$flag = false;
+				foreach ($exclude as $key => $value) {
+					if (strpos($file, $value) !== false) {
+						$flag = true;
 					}
+				}
+				if($flag)
+					continue;
 			}
 	
 		    // Skip directories (they would be added automatically)
@@ -69,13 +89,17 @@ class backup extends Command {
 		        // Get real and relative path for current file
 		        $filePath = $file->getRealPath();
 		        $relativePath = substr($filePath, strlen($base) + 1);
-				$this->info($file);
+				// $this->info($file);
 		        // Add current file to archive
 		        $zip->addFile($filePath, $relativePath);
 		    }else{
 
 		    }
 		}
+
+
+		$progressBar->advance();
+		$progressBar->finish();
 		$zip->close();
     }
 
@@ -91,7 +115,7 @@ class backup extends Command {
 
 		try {
  			$backup_file = $mysqlDatabaseName . date("Y-m-d-H-i-s") . '.gz';
-   			$command = "mysqldump --opt -h ".$mysqlHostName." -u ".$mysqlUserName." -p ".$mysqlPassword." ". "".$mysqlDatabaseName." | gzip > $backup_file";
+   			$command = "mysqldump -h ".$mysqlHostName." -u ".$mysqlUserName." -p ".$mysqlPassword." --quick ". "".$mysqlDatabaseName." | gzip > $backup_file";
 			passthru( $command );
 		}
 		catch(Exception $Exception){
