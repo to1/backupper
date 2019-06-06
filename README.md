@@ -10,14 +10,16 @@ will install the package to the project.
 
 After the package was installed successfully you can use the these commands.
 
-This command will backup all the project folders/files except "vendor" which is a folder excluded by default.
-
-There is a backupper config file with an array "exclude" it will not archive the folders that you specify on the array currently "vendor" folder is excluded by default, if you need to add folder that you do not want to backup just add them on the config array.
-
 ```
   php artisan to1:backup
  ```
   
+  
+This command will backup all the project folders/files except "vendor" which is a folder excluded by default.
+
+There is a backupper config file with an array "exclude" it will not archive the folders that you specify on the array currently "vendor" folder is excluded by default, if you need to add folder that you do not want to backup just add them on the config array.
+
+
   
   or you can specify a path to backup 
   
